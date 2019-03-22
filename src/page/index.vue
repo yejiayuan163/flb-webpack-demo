@@ -13,6 +13,9 @@
 
 <script>
   import Footer from'src/component/footer'
+  import Vue from 'vue'
+  import Vuex from 'vuex'
+  import vueRouter from 'vue-router';
 
   export default {
     name: 'index.vue',

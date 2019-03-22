@@ -1,0 +1,1 @@
+{"name":"vuex_library","content":{"./node_modules/_vuex@3.1.0@vuex/dist/vuex.esm.js":{"id":629,"buildMeta":{"exportsType":"namespace","providedExports":["default","Store","install","mapState","mapMutations","mapGetters","mapActions","createNamespacedHelpers"]}}}}

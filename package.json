@@ -6,10 +6,17 @@
   "scripts": {
     "dev": "webpack-dev-server --inline --hot --open --port 8098 --config webpack.dev.js",
     "test": "webpack --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "build:dll": "webpack --config webpack.dll.config.js"
   },
   "devDependencies": {
+    "add-asset-html-webpack-plugin": "^3.1.3",
     "autoprefixer": "^9.5.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-3": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^5.0.1",
     "css-loader": "^1.0.1",
@@ -29,8 +36,10 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
+    "echarts": "^4.2.1",
     "vue": "^2.5.17",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuex": "^3.1.0"
   },
   "repository": {
     "type": "git",

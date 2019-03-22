@@ -1,27 +1,25 @@
-const path = require('path');
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-  entry:{
-    app:'./src/index.js'
-  },
-  output:{
-    filename:'js/[name].[hash].js',//将输出文件放在js文件夹下
-    path:path.join(__dirname,'./dist')
+  entry:{app: './src/index.js'},
+  output: {
+    filename: 'js/[name].[hash].js',//将输出文件放在js文件夹下
+    path: path.join(__dirname, './dist')
   },
   resolve: {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       'src': path.resolve('src'),
-      'static': path.resolve('static'),
+      'static': path.resolve('static')
     },
     extensions: ['*', '.js', '.vue', '.json']
   },
-  module:{
-    rules:[
+  module: {
+    rules: [
       {
         test: /\.(jpe?g|png|gif)$/,
         use: [
@@ -34,15 +32,20 @@ module.exports = {
           }
         ]
       },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/
+      }
     ]
   },
-  plugins:[
+  plugins: [
     new HtmlWebpackPlugin({
-      template:'index.html',
-      filename:'index.html'
+      template: 'index.html',
+      filename: 'index.html'
     }),
     new VueLoaderPlugin(),
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(['dist'])
     // new CopyWebpackPlugin([{from: __dirname + '/static/img', to: __dirname + '/dist/img'}]),//复制静态资源到dist
   ]
 }

@@ -14,6 +14,9 @@
 
 <script>
   import Footer from 'src/component/footer'
+  import Vue from 'vue'
+  import vueRouter from 'vue-router';
+  import * as echarts from 'echarts'
 
   export default {
     name: 'more-help',
