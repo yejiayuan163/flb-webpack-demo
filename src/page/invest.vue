@@ -13,11 +13,15 @@
 <script>
   import Footer from 'src/component/footer'
   import * as echarts from 'echarts'
+  import {helloWorld,setItem} from '../../static/js/util'
   import Vuex from 'vuex'
 
   // 基于准备好的dom，初始化echarts实例
   export default {
     name: 'invest.vue',
+    created(){
+      setItem('test1','testValue1')
+    },
     mounted(){
       const a=1
       const myChart = echarts.init(document.getElementById('myChart'))

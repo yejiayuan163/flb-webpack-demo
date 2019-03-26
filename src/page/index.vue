@@ -26,9 +26,9 @@
     },
     created(){
       console.log('hello world!')
-      console.log(ENV,'123')
-      console.log('process',process)
-      console.log('process.env',process.env)
+      console.log('ENV:',ENV)
+      console.log('process:',process)
+      console.log('process.env:',process.env)
     },
     components:{
       Footer
