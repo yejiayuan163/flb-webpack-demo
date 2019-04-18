@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const common = require('./webpack.common.js')//混溶webpack.common.js的webpack配置
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')//提取css到单独文件
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')//压缩css插件
-const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');//将DLL文件插入到html模板
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 
 
@@ -82,7 +82,7 @@ module.exports = merge(common, {
     new webpack.DllReferencePlugin({
       context: path.resolve(__dirname),
       manifest: require('./static/dll/manifest/vue-manifest.json')
-    }),//DllReferencePlugin插件读取vendor-manifest.json文件
+    }),//DllReferencePlugin插件读取vendor-manifest.json文件，查找对应的依赖包dll文件
     new webpack.DllReferencePlugin({
       context: path.resolve(__dirname),
       manifest: require('./static/dll/manifest/router-manifest.json')
