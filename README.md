@@ -1,15 +1,10 @@
 # 前言
 
 在前端项目中，你是否考虑过这些问题：
-
 （1）开发时，代码按模块划分文件以方便管理。上线时，减少代码文件数量以节省请求开销。
-
-（2）开发时，代码规范命名、详细注释以方便人类阅读。上线时，代码越短越好减少文件体积以方便机器获取。
-
+（2）开发时，代码规范命名、详细注释以方便开发者阅读。上线时，代码越短越好减少文件体积以方便机器获取。
 （3）开发时，编写最简单的代码以提高开发效率。上线时，以多种方式实现代码以兼容不同浏览器运行。
-开发环境与生产环境有着不同的需求，如下图：
-
-![开发环境VS线上环境](https://upload-images.jianshu.io/upload_images/17015329-755a36aadc7fdee8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+开发环境与生产环境有着不同的需求，如下图：![开发环境VS线上环境](https://upload-images.jianshu.io/upload_images/17015329-755a36aadc7fdee8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 两者需求的实现方式是矛盾，如：线上要求文件越少越好，以减少HTTP请求的开销。开发要求按模块划分多文件，以便于开发时的管理。前者的目的是减少HTTP请求，后者却引起更多的HTTP请求，影响页面性能。
 
@@ -106,7 +101,7 @@ module.exports = merge(common, {
   mode: 'production', //开启生产环境的默认设置
 }
 ```
-但由于 UglifyJS 采用单线程压缩，速度较慢。建议采用支持并行压缩的 [webpack-parallel-uglify-plugin](https://www.npmjs.com/package/webpack-parallel-uglify-plugin) 插件，可大大减少构建时间。配置代码如下：
+但由于 UglifyJS 采用单线程压缩，速度较慢。建议采用支持并行压缩的 [webpack-parallel-uglify-plugin](https://www.npmjs.com/package/webpack-parallel-uglify-plugin) 插件，可大大减少构建时间。在配置选项中，我们可以将空格、制表符、注释、console等去除，以实现更好的压缩效果。同时避免漏删调试console代码的问题。实现代码如下：
 ```
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 module.exports = merge(common, {
@@ -168,7 +163,8 @@ export default router;
 
 ###     3、依赖包单独处理
 
-对于依赖的第三方库，比如*vue*，*vuex*等，我们可以使用[*DllPlugin*](https://www.webpackjs.com/plugins/dll-plugin/)，将依赖库预先打包，存在项目的静态资源文件夹。webpack打包项目代码时，只需要打包我们的业务代码，并根据*DllReferencePlugin*查找已打包的依赖库。这样就可以快速的提高打包的速度。示例代码如下：
+对于依赖的第三方库，比如*vue*，*vuex*等，我们可以使用[*DllPlugin*](https://www.webpackjs.com/plugins/dll-plugin/)，将依赖库预先打包，存在项目的静态资源文件夹。webpack打包项目代码时，只需要打包我们的业务代码，并根据*DllReferencePlugin*查找已打包的依赖库。这样就可以快速的提高打包的速度。代码配置如下：
+1.新建webpack.dll.config.js,用于打包依赖库。
 ```
 //webpack.dll.config.js
 const path = require('path');
@@ -210,6 +206,31 @@ module.exports = merge(common, {
   ]
 })
 ```
+2.修改webapck.prod.js
+```
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');//将DLL文件插入到html模板的插件
+plugins: [
+    new webpack.DllReferencePlugin({
+      context: path.resolve(__dirname),
+      manifest: require('./static/dll/manifest/vue-manifest.json')
+    }),//DllReferencePlugin插件读取vendor-manifest.json文件，查找对应的依赖包dll文件
+    new AddAssetHtmlPlugin([{
+      filepath: path.resolve(__dirname,'./static/dll/js/polyfill.dll.js'),
+      includeSourcemap: false,
+      hash: true,
+    }]),//用于dll包插入到index.html
+  ]
+```
+3.在package.json中增加一条脚本：
+```
+"scripts": {
+    "build:dll": "webpack --config webpack.dll.config.js"
+  },
+```
+执行npm run build:dll,生成如下文件
+![打包出来的依赖库](https://upload-images.jianshu.io/upload_images/17015329-05d6066856092dc5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+在依赖库未更新的情况下，可以一直沿用以上文件。后续项目打包的时候，不需要再执行build:dll的脚本。
+
 ###     4、处理线上旧缓存
 因为缓存，web应用的性能、体验大大提高。但当我们需要部署新代码上线时，常常因为缓存问题，导致文件不能及时更新，测试同学追着投诉代码没生效。webpack的[*html-webpack-plugin*](https://www.npmjs.com/package/html-webpack-plugin)插件很好地解决了这个问题。示例代码如下：
 ```
@@ -228,7 +249,7 @@ module.exports = {
   ]
 }
 ```
-插件根据template，生成一个带有output里filename的script标签，因为以哈希值命名，每次部署线上的文件名称都不同，解决了缓存的问题。
+插件根据template文件，生成一个带有output里filename的script标签，因为以哈希值命名，每次部署线上的文件名称都不同，解决了缓存的问题。
 
 
 
@@ -247,16 +268,19 @@ module.exports = merge(common, {
   plugins:[
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: '"development"'//webpack构建后生成一个全局的环境变量process.env.NODE_ENV，根据此变量，调用对应的接口，应用不同的配置
+        NODE_ENV: '"DEVELOPMENT"'//webpack构建后生成一个全局的环境变量process.env.NODE_ENV，根据此变量，调用对应的接口，应用不同的配置
       }
     })
   ]
 })
 ```
-运维同学再搭配jenkins，代码合并到gitlab上就可以实现自动构建啦。
+当npm run dev时，在被调用的webpack.dev.js中 NODE_ENV设置为'"DEVELOPMENT"'。
+当npm run build时，在被调用的webpack.prod.js中 NODE_ENV设置为'"PRODUCTION"'。
+我们可以方便地在全局拿到process.env.NODE_ENV的值。接下来就根据拿到的值，调用对应的接口、配置参数了。
+运维同学再搭配jenkins，写个脚本。前端代码合并到gitlab的分支就可以实现自动构建啦。
 #总结
-全文使用webpack实践了前端工程优化，然而，实际的项目优化需求要根据项目的痛点来定。如何分割代码、是否要抽离样式文件，是否要引入规范。需要不断的实践、试错。愿各位同学们砥砺前行，找到你们的最优实践。
+全文使用webpack实践了前端工程优化，在构建项目、代码压缩、兼容性处理、环境配置等方面叙述了前端工程化在开发中的作用。然而，实际的项目优化需求要根据项目的痛点来定。如何分割代码、是否要抽离样式文件，是否要引入规范。需要不断的实践、试错。愿各位同学砥砺前行，找到你们的最优实践。
 
-本文所用到的demo[任意门](https://github.com/18819467361/flb-webpack-demo)，如果能帮到你，请不吝赐个小星星。
+本文所用到的demo[任意门](https://github.com/18819467361/flb-webpack-demo)，如果能帮到你，请不吝赐个star。
 
             
