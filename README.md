@@ -1,16 +1,15 @@
 # 前言
+&emsp;&emsp;前端潮流，浩浩汤汤。一时间，各种框架如：node、vue、react，各种概念如：模块化、工程化、TDD等，如雨后春笋般涌现。我司不甘人后，及时对技术栈做了更新，wap端从传统的PHP架构，更新为node+vue的单页面应用架构。
+&emsp;&emsp;在重构的过程中，我们不能避免考虑如下的问题：
+&emsp;&emsp;（1）开发时，代码按模块划分文件以方便管理。上线时，减少代码文件数量以节省请求开销。
+&emsp;&emsp;（2）开发时，代码规范命名、详细注释以方便开发者阅读。上线时，代码越短越好减少文件体积以方便机器获取。
+&emsp;&emsp;（3）开发时，编写最简单的代码以提高开发效率。上线时，以多种方式实现代码以兼容不同浏览器运行。
+开发环境与生产环境有着不同的需求，如下图：
+![开发环境VS线上环境](https://upload-images.jianshu.io/upload_images/17015329-755a36aadc7fdee8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+&emsp;&emsp;两者需求的实现方式是矛盾，如：线上要求文件越少越好，以减少HTTP请求的开销。开发要求按模块划分多文件，以便于开发时的管理。前者的目的是减少HTTP请求，后者却引起更多的HTTP请求，影响页面性能。
 
-在前端项目中，你是否考虑过这些问题：
-（1）开发时，代码按模块划分文件以方便管理。上线时，减少代码文件数量以节省请求开销。
-（2）开发时，代码规范命名、详细注释以方便开发者阅读。上线时，代码越短越好减少文件体积以方便机器获取。
-（3）开发时，编写最简单的代码以提高开发效率。上线时，以多种方式实现代码以兼容不同浏览器运行。
-开发环境与生产环境有着不同的需求，如下图：![开发环境VS线上环境](https://upload-images.jianshu.io/upload_images/17015329-755a36aadc7fdee8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-两者需求的实现方式是矛盾，如：线上要求文件越少越好，以减少HTTP请求的开销。开发要求按模块划分多文件，以便于开发时的管理。前者的目的是减少HTTP请求，后者却引起更多的HTTP请求，影响页面性能。
-
-如今，我们能通过webpack等自动化打包工具，完成从开发的源代码到线上的生产代码的自动化构建。
+如今，我司通过webpack等自动化打包工具，完成从开发的源代码到线上的生产代码的自动化构建。
 ![webpack构建过程](https://upload-images.jianshu.io/upload_images/17015329-e8af8e84610f5a2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
 本文以上述开发与生产的矛盾为出发点，基于webpack4实现前端工程优化
 # 一、CSS
 webpack提供了相应的plugin、loader实现对css文件的压缩、抽离、兼容性处理
@@ -101,7 +100,7 @@ module.exports = merge(common, {
   mode: 'production', //开启生产环境的默认设置
 }
 ```
-但由于 UglifyJS 采用单线程压缩，速度较慢。建议采用支持并行压缩的 [webpack-parallel-uglify-plugin](https://www.npmjs.com/package/webpack-parallel-uglify-plugin) 插件，可大大减少构建时间。在配置选项中，我们可以将空格、制表符、注释、console等去除，以实现更好的压缩效果。同时避免漏删调试console代码的问题。实现代码如下：
+但由于 UglifyJS 采用单线程压缩，速度较慢。我司pms后台管理系统采用支持并行压缩的 [webpack-parallel-uglify-plugin](https://www.npmjs.com/package/webpack-parallel-uglify-plugin) 插件，构建速度提高了30%。在配置选项中，我们可以将空格、制表符、注释、console等去除，以实现更好的压缩效果。同时避免漏删调试console代码的问题。实现代码如下：
 ```
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 module.exports = merge(common, {
@@ -282,5 +281,3 @@ module.exports = merge(common, {
 全文使用webpack实践了前端工程优化，在构建项目、代码压缩、兼容性处理、环境配置等方面叙述了前端工程化在开发中的作用。然而，实际的项目优化需求要根据项目的痛点来定。如何分割代码、是否要抽离样式文件，是否要引入规范。需要不断的实践、试错。愿各位同学砥砺前行，找到你们的最优实践。
 
 本文所用到的demo[任意门](https://github.com/18819467361/flb-webpack-demo)，如果能帮到你，请不吝赐个star。
-
-            
