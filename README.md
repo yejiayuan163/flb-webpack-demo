@@ -10,6 +10,7 @@
 
 如今，我司通过webpack等自动化打包工具，完成从开发的源代码到线上的生产代码的自动化构建。
 ![webpack构建过程](https://upload-images.jianshu.io/upload_images/17015329-e8af8e84610f5a2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 本文以上述开发与生产的矛盾为出发点，基于webpack4实现前端工程优化
 # 一、CSS
 webpack提供了相应的plugin、loader实现对css文件的压缩、抽离、兼容性处理
